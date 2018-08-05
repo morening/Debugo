@@ -12,12 +12,35 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        initAllViews();
     }
 
+    @Override
     @Sequence
-    private void initAllViews(){
+    protected void onStart() {
+        super.onStart();
+    }
 
+    @Override
+    @Sequence
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    @Sequence
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    @Sequence
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    @Sequence
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
