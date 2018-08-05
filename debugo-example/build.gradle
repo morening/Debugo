@@ -1,10 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'debugo'
 
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-
 android {
     compileSdkVersion 27
     defaultConfig {
