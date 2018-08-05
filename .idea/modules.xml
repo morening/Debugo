@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Debugo.iml" filepath="$PROJECT_DIR$/Debugo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/debugo-annotations/debugo-annotations.iml" filepath="$PROJECT_DIR$/debugo-annotations/debugo-annotations.iml" />
+      <module fileurl="file://$PROJECT_DIR$/debugo-plugin/debugo-plugin.iml" filepath="$PROJECT_DIR$/debugo-plugin/debugo-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/debugo-runtime/debugo-runtime.iml" filepath="$PROJECT_DIR$/debugo-runtime/debugo-runtime.iml" />
+    </modules>
+  </component>
+</project>

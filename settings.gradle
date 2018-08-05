@@ -1,0 +1,2 @@
+include ':debugo-runtime', ':debugo-annotations', ':debugo-plugin'
+//include ':debugo-example'
