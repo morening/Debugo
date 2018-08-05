@@ -10,72 +10,73 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.compile.JavaCompile
 
 class DebugoPlugin implements Plugin<Project> {
-  @Override void apply(Project project) {
-    def hasApp = project.plugins.withType(AppPlugin)
-    def hasLib = project.plugins.withType(LibraryPlugin)
-    if (!hasApp && !hasLib) {
-      throw new IllegalStateException("'android' or 'android-library' plugin required.")
-    }
-
-    final def log = project.logger
-    final def variants
-    if (hasApp) {
-      variants = project.android.applicationVariants
-    } else {
-      variants = project.android.libraryVariants
-    }
-
-    project.dependencies {
-      debugCompile 'com.github.morening.Debugo:debugo-runtime:0.0.4'
-      debugCompile 'org.aspectj:aspectjrt:1.8.6'
-      implementation 'com.github.morening.Debugo:debugo-annotations:0.0.4'
-    }
-
-    project.extensions.create('debugo', DebugoExtension)
-
-    variants.all { variant ->
-      if (!variant.buildType.isDebuggable()) {
-        log.debug("Skipping non-debuggable build type '${variant.buildType.name}'.")
-        return;
-      } else if (!project.debugo.enabled) {
-        log.debug("debugo is not disabled.")
-        return;
-      }
-
-      JavaCompile javaCompile = variant.javaCompile
-      javaCompile.doLast {
-        String[] args = [
-            "-showWeaveInfo",
-            "-1.5",
-            "-inpath", javaCompile.destinationDir.toString(),
-            "-aspectpath", javaCompile.classpath.asPath,
-            "-d", javaCompile.destinationDir.toString(),
-            "-classpath", javaCompile.classpath.asPath,
-            "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
-        ]
-        log.debug "ajc args: " + Arrays.toString(args)
-
-        MessageHandler handler = new MessageHandler(true);
-        new Main().run(args, handler);
-        for (IMessage message : handler.getMessages(null, true)) {
-          switch (message.getKind()) {
-            case IMessage.ABORT:
-            case IMessage.ERROR:
-            case IMessage.FAIL:
-              log.error message.message, message.thrown
-              break;
-            case IMessage.WARNING:
-              log.warn message.message, message.thrown
-              break;
-            case IMessage.INFO:
-              log.info message.message, message.thrown
-              break;
-            case IMessage.DEBUG:
-              log.debug message.message, message.thrown
-              break;
-          }
+    @Override
+    void apply(Project project) {
+        def hasApp = project.plugins.withType(AppPlugin)
+        def hasLib = project.plugins.withType(LibraryPlugin)
+        if (!hasApp && !hasLib) {
+            throw new IllegalStateException("'android' or 'android-library' plugin required.")
         }
-      }
+
+        final def log = project.logger
+        final def variants
+        if (hasApp) {
+            variants = project.android.applicationVariants
+        } else {
+            variants = project.android.libraryVariants
+        }
+
+        project.dependencies {
+            debugImplementation 'com.github.morening.Debugo:debugo-runtime:0.0.1'
+            debugImplementation 'org.aspectj:aspectjrt:1.8.6'
+            implementation 'com.github.morening.Debugo:debugo-annotations:0.0.1'
+        }
+
+        project.extensions.create('debugo', DebugoExtension)
+
+        variants.all { variant ->
+            if (!variant.buildType.isDebuggable()) {
+                log.debug("Skipping non-debuggable build type '${variant.buildType.name}'.")
+                return;
+            } else if (!project.debugo.enabled) {
+                log.debug("debugo is not disabled.")
+                return;
+            }
+
+            JavaCompile javaCompile = variant.javaCompile
+            javaCompile.doLast {
+                String[] args = [
+                        "-showWeaveInfo",
+                        "-1.5",
+                        "-inpath", javaCompile.destinationDir.toString(),
+                        "-aspectpath", javaCompile.classpath.asPath,
+                        "-d", javaCompile.destinationDir.toString(),
+                        "-classpath", javaCompile.classpath.asPath,
+                        "-bootclasspath", project.android.bootClasspath.join(File.pathSeparator)
+                ]
+                log.debug "ajc args: " + Arrays.toString(args)
+
+                MessageHandler handler = new MessageHandler(true);
+                new Main().run(args, handler);
+                for (IMessage message : handler.getMessages(null, true)) {
+                    switch (message.getKind()) {
+                        case IMessage.ABORT:
+                        case IMessage.ERROR:
+                        case IMessage.FAIL:
+                            log.error message.message, message.thrown
+                            break;
+                        case IMessage.WARNING:
+                            log.warn message.message, message.thrown
+                            break;
+                        case IMessage.INFO:
+                            log.info message.message, message.thrown
+                            break;
+                        case IMessage.DEBUG:
+                            log.debug message.message, message.thrown
+                            break;
+                    }
+                }
+            }
+        }
     }
-  }
 }
