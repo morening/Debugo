@@ -7,8 +7,8 @@ import android.util.Log;
 import com.morening.debugo.debugo_annotations.Sequence;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -36,68 +36,73 @@ public class Debugo {
 
 
     @Pointcut("execution(@com.morening.debugo.debugo_annotations.Sequence * *(..))")
-    public void methodExecution4Sequence() {}
+    public void methodSequence() {}
 
-    @Before("methodExecution4Sequence()")
-    public void beforeMethodExecution4Sequence(JoinPoint joinPoint) throws Throwable {
+    @Before("methodSequence()")
+    public void beforeMethodSequence(JoinPoint joinPoint) throws Throwable {
         Sequence sequence = getMethodAnnotation(joinPoint, Sequence.class);
         String TAG = sequence.TAG();
         Method method = getMethod(joinPoint);
         String methodName = method.getName();
-        Log.d(TAG, String.format("Before Method Execution: %s", methodName));
+        Log.d(TAG, String.format("Before Execute Method [%s]", methodName));
     }
 
-    @After("methodExecution4Sequence()")
-    public void afterMethodExecution4Sequence(JoinPoint joinPoint) throws Throwable {
+    @AfterReturning(pointcut = "methodSequence()", returning = "ret")
+    public void afterReturningMethodSequence(JoinPoint joinPoint, Object ret) throws Throwable {
         Sequence sequence = getMethodAnnotation(joinPoint, Sequence.class);
         String TAG = sequence.TAG();
         Method method = getMethod(joinPoint);
         String methodName = method.getName();
-        Log.d(TAG, String.format("After Method Execution: %s", methodName));
+        if (ret == null){
+            Log.d(TAG, String.format("After Method [%s] Executed", methodName));
+        } else {
+            Log.d(TAG, String.format("After Method [%s] Executed With Return Value [%s]", methodName, ret.toString()));
+        }
+    }
+
+    @AfterThrowing(pointcut = "methodSequence()", throwing = "thw")
+    public void afterThrowingMethodSequence(JoinPoint joinPoint, Object thw){
+        Sequence sequence = getMethodAnnotation(joinPoint, Sequence.class);
+        String TAG = sequence.TAG();
+        Method method = getMethod(joinPoint);
+        String methodName = method.getName();
+        int line = joinPoint.getSourceLocation().getLine();
+        Log.d(TAG, String.format("Method [%s] Terminated By Exception [%s] at line [%s]", methodName, thw, line));
     }
 
 
 
     @Pointcut("execution(@com.morening.debugo.debugo_annotations.Sequence *.new(..))")
-    public void constructorExecution4Sequence() {}
+    public void constructorSequence() {}
 
-    @Before("constructorExecution4Sequence()")
-    public void beforeConstructorExecution4Sequence(JoinPoint joinPoint) throws Throwable {
+    @Before("constructorSequence()")
+    public void beforeConstructorSequence(JoinPoint joinPoint) throws Throwable {
         Sequence sequence = getConstructorAnnotation(joinPoint, Sequence.class);
         String TAG = sequence.TAG();
         Constructor constructor = getConstructor(joinPoint);
         String constructorName = constructor.getName();
-        Log.d(TAG, String.format("Before Constructor Execution: %s", constructorName));
+        Log.d(TAG, String.format("Before Construct Constructor [%s]", constructorName));
     }
 
-    @After("constructorExecution4Sequence()")
-    public void afterConstructorExecution4Sequence(JoinPoint joinPoint) throws Throwable {
+    @After("constructorSequence()")
+    public void afterConstructorSequence(JoinPoint joinPoint) throws Throwable {
         Sequence sequence = getConstructorAnnotation(joinPoint, Sequence.class);
         String TAG = sequence.TAG();
         Constructor constructor = getConstructor(joinPoint);
         String constructorName = constructor.getName();
-        Log.d(TAG, String.format("After Constructor Execution: %s", constructorName));
+        Log.d(TAG, String.format("After Constructor [%s] Constructed", constructorName));
     }
 
-
-
-    @AfterThrowing("methodExecution4Sequence() || constructorExecution4Sequence()")
-    public void afterThrowingExecution4Sequence(JoinPoint joinPoint){
-        Signature signature = joinPoint.getSignature();
-        if (signature instanceof MethodSignature){
-            Sequence sequence = getMethodAnnotation(joinPoint, Sequence.class);
-            String TAG = sequence.TAG();
-            Method method = getMethod(joinPoint);
-            String methodName = method.getName();
-            Log.d(TAG, String.format("AfterThrowing Method Execution: %s", methodName));
-        } else if (signature instanceof ConstructorSignature){
-            Sequence sequence = getConstructorAnnotation(joinPoint, Sequence.class);
-            String TAG = sequence.TAG();
-            Constructor constructor = getConstructor(joinPoint);
-            String constructorName = constructor.getName();
-            Log.d(TAG, String.format("AfterThrowing Constructor Execution: %s", constructorName));
-        }
+    @AfterThrowing(pointcut = "constructorSequence()", throwing = "thw")
+    public void afterThrowingConstructorSequence(JoinPoint joinPoint, Object thw){
+        Sequence sequence = getMethodAnnotation(joinPoint, Sequence.class);
+        String TAG = sequence.TAG();
+        Method method = getMethod(joinPoint);
+        String methodName = method.getName();
+        int line = joinPoint.getSourceLocation().getLine();
+        Log.d(TAG, String.format("Constructor [%s] Terminated By Exception [%s] at line [%s]", methodName, thw, line));
     }
+
 
 
     @TargetApi(Build.VERSION_CODES.N)
