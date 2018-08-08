@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface Sequence {
-    String TAG() default "DebugoSequence";
+public @interface Debugo {
+    String TAG() default "debugo";
 }
