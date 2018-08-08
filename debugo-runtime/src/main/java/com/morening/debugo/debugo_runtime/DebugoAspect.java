@@ -2,6 +2,7 @@ package com.morening.debugo.debugo_runtime;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.os.Looper;
 import android.util.Log;
 
 import com.morening.debugo.debugo_annotations.Debugo;
@@ -55,6 +56,10 @@ public class DebugoAspect {
         sb.append("->").append(" ");
         sb.append(getMethodNameWithParameters(joinPoint));
 
+        if (Looper.myLooper() != Looper.getMainLooper()){
+            sb.append(" ").append("Thread:").append(Thread.currentThread().getName());
+        }
+
         Log.d(getTag(joinPoint), sb.toString());
 
         return System.currentTimeMillis();
@@ -92,8 +97,10 @@ public class DebugoAspect {
         StringBuilder sb = new StringBuilder();
         sb.append(getMethodNameWithParameters(joinPoint))
                 .append(" ").append("[").append(duration).append("]")
-                .append(" ").append("->")
-                .append(" ").append(result.toString());
+                .append(" ").append("->");
+        if (result != null){
+            sb.append(" ").append(result);
+        }
 
         Log.d(getTag(joinPoint), sb.toString());
     }
@@ -102,6 +109,7 @@ public class DebugoAspect {
         StringBuilder sb = new StringBuilder();
         sb.append(getMethodNameWithParameters(joinPoint))
                 .append(" ").append("terminated due to")
+                .append(" ").append(throwable.getCause())
                 .append(" ").append(throwable.getMessage());
 
         Log.d(getTag(joinPoint), sb.toString());
