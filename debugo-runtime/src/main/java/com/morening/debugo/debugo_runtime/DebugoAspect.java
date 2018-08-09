@@ -34,10 +34,19 @@ public class DebugoAspect {
         DebugoAspect.enabled = enabled;
     }
 
-    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo * *(..))")
+    @Pointcut("within(@com.morening.debugo.debugo_annotations.Debugo *)")
+    public void withinAnnotatedClass() {}
+
+    @Pointcut("execution(!synthetic * *(..)) && withinAnnotatedClass()")
+    public void methodInsideAnnotatedType() {}
+
+    @Pointcut("execution(!synthetic *.new(..)) && withinAnnotatedClass()")
+    public void constructorInsideAnnotatedType() {}
+
+    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo * *(..)) || methodInsideAnnotatedType()")
     public void method() {}
 
-    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo *.new(..))")
+    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo *.new(..)) || constructorInsideAnnotatedType()")
     public void constructor() {}
 
     @Around("method() || constructor()")
@@ -68,7 +77,7 @@ public class DebugoAspect {
 
     private static String getTag(JoinPoint joinPoint){
         Debugo debugo = getAnnotation(joinPoint, Debugo.class);
-        String Tag = "Debugo";
+        String Tag = "debugo";
         if (debugo != null){
             Tag = debugo.TAG();
         }
@@ -103,7 +112,6 @@ public class DebugoAspect {
         boolean hasReturnValue = (joinPoint.getSignature() instanceof MethodSignature)
                 && (((MethodSignature)joinPoint.getSignature()).getReturnType() != void.class);
         if (hasReturnValue){
-            Log.d("sunning", "result: "+result);
             sb.append(" ").append(Strings.toString(result));
         }
 
