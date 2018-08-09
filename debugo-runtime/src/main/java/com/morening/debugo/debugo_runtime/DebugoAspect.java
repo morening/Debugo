@@ -79,13 +79,14 @@ public class DebugoAspect {
         CodeSignature signature = (CodeSignature) joinPoint.getSignature();
         String name = signature.getName();
         String[] parameterNames = signature.getParameterNames();
+        Object[] parameterValues = joinPoint.getArgs();
         StringBuilder sb = new StringBuilder();
         sb.append(name).append("(");
         for (int k=0; k<parameterNames.length; k++){
             if (k > 0){
                 sb.append(", ");
             }
-            sb.append(parameterNames[k]);
+            sb.append(String.format("%s=%s", parameterNames[k], Strings.toString(parameterValues[k])));
         }
         sb.append(")");
 
@@ -96,10 +97,10 @@ public class DebugoAspect {
         long duration = System.currentTimeMillis() - start;
         StringBuilder sb = new StringBuilder();
         sb.append(getMethodNameWithParameters(joinPoint))
-                .append(" ").append("[").append(duration).append("]")
+                .append(" ").append("[").append(duration).append("ms").append("]")
                 .append(" ").append("->");
         if (result != null){
-            sb.append(" ").append(result);
+            sb.append(" ").append(Strings.toString(result));
         }
 
         Log.d(getTag(joinPoint), sb.toString());
