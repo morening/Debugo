@@ -99,7 +99,9 @@ public class DebugoAspect {
         sb.append(getMethodNameWithParameters(joinPoint))
                 .append(" ").append("[").append(duration).append("ms").append("]")
                 .append(" ").append("->");
-        if (result != null){
+        boolean hasReturnValue = joinPoint.getSignature() instanceof MethodSignature
+                && ((MethodSignature)joinPoint.getSignature()).getReturnType() != void.class;
+        if (hasReturnValue){
             sb.append(" ").append(Strings.toString(result));
         }
 
