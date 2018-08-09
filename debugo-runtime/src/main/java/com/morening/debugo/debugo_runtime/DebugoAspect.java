@@ -47,6 +47,7 @@ public class DebugoAspect {
             Object result = joinPoint.proceed();
             exit(joinPoint, result, start);
         } catch (Throwable throwable) {
+            throwable.printStackTrace();
             exitThrowable(joinPoint, throwable);
         }
     }
@@ -99,9 +100,10 @@ public class DebugoAspect {
         sb.append(getMethodNameWithParameters(joinPoint))
                 .append(" ").append("[").append(duration).append("ms").append("]")
                 .append(" ").append("->");
-        boolean hasReturnValue = joinPoint.getSignature() instanceof MethodSignature
-                && ((MethodSignature)joinPoint.getSignature()).getReturnType() != void.class;
+        boolean hasReturnValue = (joinPoint.getSignature() instanceof MethodSignature)
+                && (((MethodSignature)joinPoint.getSignature()).getReturnType() != void.class);
         if (hasReturnValue){
+            Log.d("sunning", "result: "+result);
             sb.append(" ").append(Strings.toString(result));
         }
 
