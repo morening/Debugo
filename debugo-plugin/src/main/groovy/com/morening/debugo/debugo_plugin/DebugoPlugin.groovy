@@ -27,9 +27,9 @@ class DebugoPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            debugImplementation 'com.github.morening.Debugo:debugo-runtime:0.0.15'
+            debugImplementation 'com.github.morening.Debugo:debugo-runtime:0.0.16'
             debugImplementation 'org.aspectj:aspectjrt:1.8.6'
-            implementation 'com.github.morening.Debugo:debugo-annotations:0.0.15'
+            implementation 'com.github.morening.Debugo:debugo-annotations:0.0.16'
         }
 
         project.extensions.create('debugo', DebugoExtension)
@@ -43,7 +43,7 @@ class DebugoPlugin implements Plugin<Project> {
                 return;
             }
 
-            JavaCompile javaCompile = variant.javaCompile
+            JavaCompile javaCompile = variant.getJavaCompiler()
             javaCompile.doLast {
                 String[] args = [
                         "-showWeaveInfo",

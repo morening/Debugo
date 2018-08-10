@@ -12,17 +12,17 @@ dependencies {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 android.libraryVariants.all { variant ->
-    JavaCompile javaCompile = variant.javaCompile
+    JavaCompile javaCompile = variant.getJavaCompiler()
     javaCompile.doLast {
         String[] args = [
                 "-showWeaveInfo",

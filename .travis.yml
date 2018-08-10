@@ -1,0 +1,18 @@
+language: android
+
+jdk:
+ - oraclejdk8
+
+android:
+  components:
+    - build-tools-27.0.3
+    - android-27
+
+    # Update Android SDK Tools
+    - tools
+
+branches:
+  except:
+
+notifications:
+  email: false

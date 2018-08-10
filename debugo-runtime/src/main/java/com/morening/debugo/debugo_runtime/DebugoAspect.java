@@ -10,6 +10,7 @@ import com.morening.debugo.debugo_annotations.Debugo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -43,22 +44,32 @@ public class DebugoAspect {
     @Pointcut("execution(!synthetic *.new(..)) && withinAnnotatedClass()")
     public void constructorInsideAnnotatedType() {}
 
-    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo * *(..)) || methodInsideAnnotatedType()")
+    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo * *(..))")
+    public void annotatedMethod(){}
+
+    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo *.new(..))")
+    public void annotatedConstructor(){}
+
+    @Pointcut("annotatedMethod() || methodInsideAnnotatedType()")
     public void method() {}
 
-    @Pointcut("execution(@com.morening.debugo.debugo_annotations.Debugo *.new(..)) || constructorInsideAnnotatedType()")
+    @Pointcut("annotatedConstructor() || constructorInsideAnnotatedType()")
     public void constructor() {}
 
     @Around("method() || constructor()")
-    public void executeAndLog(ProceedingJoinPoint joinPoint){
-        long start = enter(joinPoint);
-        try {
-            Object result = joinPoint.proceed();
-            exit(joinPoint, result, start);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-            exitThrowable(joinPoint, throwable);
-        }
+    public Object executeAndLog(ProceedingJoinPoint joinPoint) throws Throwable {
+        enter(joinPoint);
+        long startMillis = System.currentTimeMillis();
+        Object result = joinPoint.proceed();
+        long durationMillis = System.currentTimeMillis() - startMillis;
+        exit(joinPoint, result, durationMillis);
+
+        return result;
+    }
+
+    @AfterThrowing(pointcut = "method() || constructor()", throwing = "thw")
+    public void throwingAndLog(JoinPoint joinPoint, Object thw){
+        exitThrowable(joinPoint, (Throwable) thw);
     }
 
     private static long enter(ProceedingJoinPoint joinPoint) {
@@ -75,6 +86,34 @@ public class DebugoAspect {
         return System.currentTimeMillis();
     }
 
+    private static void exit(ProceedingJoinPoint joinPoint, Object result, long start) {
+        long duration = System.currentTimeMillis() - start;
+        StringBuilder sb = new StringBuilder();
+        sb.append("->")
+                .append(" ").append(getMethodNameWithParameters(joinPoint))
+                .append(" ").append("[").append(duration).append("ms").append("]");
+        boolean hasReturnValue = (joinPoint.getSignature() instanceof MethodSignature)
+                && (((MethodSignature)joinPoint.getSignature()).getReturnType() != void.class);
+        if (hasReturnValue){
+            sb.append("").append("=")
+                    .append(" ").append(Strings.toString(result));
+        }
+
+        Log.d(getTag(joinPoint), sb.toString());
+    }
+
+    private static void exitThrowable(JoinPoint joinPoint, Throwable throwable) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getMethodNameWithParameters(joinPoint))
+                .append(" ").append("terminated due to")
+                .append(" ").append(throwable.getClass().getSimpleName())
+                .append(" ").append(throwable.getMessage())
+                .append(" ").append("at line")
+                .append(" ").append(joinPoint.getSourceLocation().getLine());
+
+        Log.d(getTag(joinPoint), sb.toString());
+    }
+
     private static String getTag(JoinPoint joinPoint){
         Debugo debugo = getAnnotation(joinPoint, Debugo.class);
         String Tag = "debugo";
@@ -87,11 +126,19 @@ public class DebugoAspect {
 
     private static String getMethodNameWithParameters(JoinPoint joinPoint){
         CodeSignature signature = (CodeSignature) joinPoint.getSignature();
-        String name = signature.getName();
+        Class<?> clazz = joinPoint.getThis().getClass();
+        Class<?> enclosingClazz = clazz.getEnclosingClass();
+        String className = clazz.getSimpleName();
+        String signatureName = signature.getName();
         String[] parameterNames = signature.getParameterNames();
         Object[] parameterValues = joinPoint.getArgs();
+
         StringBuilder sb = new StringBuilder();
-        sb.append(name).append("(");
+        if (enclosingClazz != null){
+            sb.append(enclosingClazz.getSimpleName()).append("$");
+        }
+        sb.append(className).append(".")
+                .append(signatureName).append("(");
         for (int k=0; k<parameterNames.length; k++){
             if (k > 0){
                 sb.append(", ");
@@ -101,31 +148,6 @@ public class DebugoAspect {
         sb.append(")");
 
         return sb.toString();
-    }
-
-    private static void exit(ProceedingJoinPoint joinPoint, Object result, long start) {
-        long duration = System.currentTimeMillis() - start;
-        StringBuilder sb = new StringBuilder();
-        sb.append(getMethodNameWithParameters(joinPoint))
-                .append(" ").append("[").append(duration).append("ms").append("]")
-                .append(" ").append("->");
-        boolean hasReturnValue = (joinPoint.getSignature() instanceof MethodSignature)
-                && (((MethodSignature)joinPoint.getSignature()).getReturnType() != void.class);
-        if (hasReturnValue){
-            sb.append(" ").append(Strings.toString(result));
-        }
-
-        Log.d(getTag(joinPoint), sb.toString());
-    }
-
-    private static void exitThrowable(ProceedingJoinPoint joinPoint, Throwable throwable) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getMethodNameWithParameters(joinPoint))
-                .append(" ").append("terminated due to")
-                .append(" ").append(throwable.getCause())
-                .append(" ").append(throwable.getMessage());
-
-        Log.d(getTag(joinPoint), sb.toString());
     }
 
     private static <T extends Annotation> T getAnnotation(JoinPoint joinPoint, Class<T> clazz){
@@ -139,24 +161,17 @@ public class DebugoAspect {
         return null;
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
-    private static <T extends Annotation> T getConstructorAnnotation(JoinPoint joinPoint, Class<T> clazz){
-        Constructor constructor = getConstructor(joinPoint);
-        T t = constructor.getDeclaredAnnotation(clazz);
+    private static <T extends Annotation> T getMethodAnnotation(JoinPoint joinPoint, Class<T> clazz){
+        Method method = getMethod(joinPoint);
+        T t = method.getAnnotation(clazz);
 
         return t;
     }
 
-    private static Constructor getConstructor(JoinPoint joinPoint){
-        ConstructorSignature constructorSignature = (ConstructorSignature)joinPoint.getSignature();
-        Constructor constructor = constructorSignature.getConstructor();
-
-        return constructor;
-    }
-
-    private static <T extends Annotation> T getMethodAnnotation(JoinPoint joinPoint, Class<T> clazz){
-        Method method = getMethod(joinPoint);
-        T t = method.getAnnotation(clazz);
+    @TargetApi(Build.VERSION_CODES.N)
+    private static <T extends Annotation> T getConstructorAnnotation(JoinPoint joinPoint, Class<T> clazz){
+        Constructor constructor = getConstructor(joinPoint);
+        T t = constructor.getDeclaredAnnotation(clazz);
 
         return t;
     }
@@ -166,5 +181,12 @@ public class DebugoAspect {
         Method method = signature.getMethod();
 
         return method;
+    }
+
+    private static Constructor getConstructor(JoinPoint joinPoint){
+        ConstructorSignature constructorSignature = (ConstructorSignature)joinPoint.getSignature();
+        Constructor constructor = constructorSignature.getConstructor();
+
+        return constructor;
     }
 }

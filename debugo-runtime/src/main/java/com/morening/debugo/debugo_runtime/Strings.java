@@ -5,6 +5,11 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+/*
+ * This file is edited by Jake Wharton in Open Project Hugo(https://github.com/JakeWharton/hugo)
+ * Thanks to Jake Wharton and Thanks to Open Projects
+ */
+
 final class Strings {
   static String toString(Object obj) {
     if (obj == null) {
