@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * Created by morening on 2018/8/1.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Debugo {
     String TAG() default "debugo";
 }
