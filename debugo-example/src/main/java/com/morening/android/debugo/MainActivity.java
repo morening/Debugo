@@ -5,51 +5,38 @@ import android.os.Bundle;
 
 import com.morening.debugo.debugo_annotations.Debugo;
 
+@Debugo
 public class MainActivity extends Activity {
 
     @Override
-    @Debugo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getStaff();
+        returnVoid();
+        returnString("Debugo");
+        returnStaff("Jack", 21);
+        try {
+            returnThrowable();
+        }catch (Exception e){
+
+        }
     }
 
-    @Override
-    @Debugo
-    protected void onStart() {
-        super.onStart();
+    private void returnVoid(){
     }
 
-    @Override
-    @Debugo
-    protected void onResume() {
-        super.onResume();
+    private String returnString(String str){
+        return String.format("Hello [%s]!", str);
     }
 
-    @Override
-    @Debugo
-    protected void onPause() {
-        super.onPause();
+    private Staff returnStaff(String name, int age){
+
+        return new Staff(name, age);
     }
 
-    @Override
-    @Debugo
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    @Debugo
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Debugo
-    private Staff getStaff(){
-
-        return new Staff("Tom", 21);
+    private void returnThrowable(){
+        int wrong = 1 / 0;
     }
 
     static class Staff{
