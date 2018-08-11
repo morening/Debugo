@@ -1,11 +1,12 @@
 # Debugo
 Easy to debug your project with annotations
 
+[![Build Status](https://travis-ci.org/morening/Debugo.svg?branch=master)](https://travis-ci.org/morening/Debugo)
 [![](https://jitpack.io/v/morening/Debugo.svg)](https://jitpack.io/#morening/Debugo)
 
 
 ## How to
-1. add jitpack repo and classpath like below in project root build.gradle
+1. Add jitpack repo and classpath like below in project root build.gradle
 ```
 buildscript {
     repositories {
@@ -15,7 +16,7 @@ buildscript {
 
     dependencies {
         ...
-        classpath 'com.github.morening.Debugo:debugo-plugin:0.0.6'
+        classpath 'com.github.morening.Debugo:debugo-plugin:0.0.25'
     }
 }
 
@@ -27,7 +28,38 @@ allprojects {
 }
 ```
 
-2. add debugo plugin like below in module build.gradle
+2. Add debugo plugin like below in module build.gradle
 ```
 apply plugin: 'debugo'
+```
+
+3. Add @Debugo above the target like below
+```java
+// for Class/Interface
+@Debugo
+public class MainActivity extends Activity {
+    ...
+}
+```
+
+or
+
+```java
+// for Method
+@Override
+@Debugo
+protected void onCreate(Bundle savedInstanceState) {
+    ...
+}
+```
+
+or
+
+```java
+// for Constructor
+@Debugo
+public Staff(String name, int age){
+    this.name = name;
+    this.age = age;
+}
 ```
