@@ -84,7 +84,7 @@ public class DebugoAspect {
         if (!enabled) return;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("->")
+        sb.append("<-")
                 .append(" ").append(getMethodNameWithParameters(joinPoint))
                 .append(" ").append("[").append(duration).append("ms").append("]");
         boolean hasReturnValue = (joinPoint.getSignature() instanceof MethodSignature)
@@ -110,13 +110,8 @@ public class DebugoAspect {
     }*/
 
     private static String getTag(JoinPoint joinPoint){
-        Debugo debugo = getAnnotation(joinPoint, Debugo.class);
-        String Tag = "debugo";
-        if (debugo != null){
-            Tag = debugo.TAG();
-        }
 
-        return Tag;
+        return getAnnotation(joinPoint, Debugo.class).TAG();
     }
 
     private static String getMethodNameWithParameters(JoinPoint joinPoint){
@@ -149,11 +144,8 @@ public class DebugoAspect {
         Signature signature = joinPoint.getSignature();
         if (signature instanceof MethodSignature){
             return getMethodAnnotation(joinPoint, clazz);
-        } else if (signature instanceof ConstructorSignature){
-            return getConstructorAnnotation(joinPoint, clazz);
         }
-
-        return null;
+        return getConstructorAnnotation(joinPoint, clazz);
     }
 
     private static <T extends Annotation> T getMethodAnnotation(JoinPoint joinPoint, Class<T> clazz){
