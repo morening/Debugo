@@ -67,10 +67,10 @@ public class DebugoAspect {
         return result;
     }
 
-    @AfterThrowing(pointcut = "method() || constructor()", throwing = "thw")
+    /*@AfterThrowing(pointcut = "method() || constructor()", throwing = "thw")
     public void throwingAndLog(JoinPoint joinPoint, Object thw){
         exitThrowable(joinPoint, (Throwable) thw);
-    }
+    }*/
 
     private static long enter(ProceedingJoinPoint joinPoint) {
         StringBuilder sb = new StringBuilder();
@@ -102,7 +102,7 @@ public class DebugoAspect {
         Log.d(getTag(joinPoint), sb.toString());
     }
 
-    private static void exitThrowable(JoinPoint joinPoint, Throwable throwable) {
+    /*private static void exitThrowable(JoinPoint joinPoint, Throwable throwable) {
         StringBuilder sb = new StringBuilder();
         sb.append(getMethodNameWithParameters(joinPoint))
                 .append(" ").append("terminated due to")
@@ -112,7 +112,7 @@ public class DebugoAspect {
                 .append(" ").append(joinPoint.getSourceLocation().getLine());
 
         Log.d(getTag(joinPoint), sb.toString());
-    }
+    }*/
 
     private static String getTag(JoinPoint joinPoint){
         Debugo debugo = getAnnotation(joinPoint, Debugo.class);
