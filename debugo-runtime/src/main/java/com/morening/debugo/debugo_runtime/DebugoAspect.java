@@ -110,15 +110,19 @@ public class DebugoAspect {
     }*/
 
     private static String getTag(JoinPoint joinPoint){
+        Debugo debugo = getAnnotation(joinPoint, Debugo.class);
+        if (debugo == null){
+            return "debugo";
+        }
 
-        return getAnnotation(joinPoint, Debugo.class).TAG();
+        return debugo.TAG();
     }
 
     private static String getMethodNameWithParameters(JoinPoint joinPoint){
         CodeSignature signature = (CodeSignature) joinPoint.getSignature();
-        Class<?> clazz = joinPoint.getThis().getClass();
-        Class<?> enclosingClazz = clazz.getEnclosingClass();
-        String className = clazz.getSimpleName();
+        Class<?> targetClazz = joinPoint.getTarget().getClass();
+        Class<?> enclosingClazz = targetClazz.getEnclosingClass();
+        String className = targetClazz.getSimpleName();
         String signatureName = signature.getName();
         String[] parameterNames = signature.getParameterNames();
         Object[] parameterValues = joinPoint.getArgs();
@@ -148,15 +152,7 @@ public class DebugoAspect {
             return getConstructorAnnotation(joinPoint, clazz);
         }
 
-        return getTypeAnnotation(joinPoint, clazz);
-    }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    private static <T extends Annotation> T getTypeAnnotation(JoinPoint joinPoint, Class<T> clazz) {
-        Class<? extends Signature> typeClass = joinPoint.getSignature().getClass();
-        T t = typeClass.getDeclaredAnnotation(clazz);
-
-        return t;
+        return null;
     }
 
     private static <T extends Annotation> T getMethodAnnotation(JoinPoint joinPoint, Class<T> clazz){
