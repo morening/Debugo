@@ -153,9 +153,8 @@ public class DebugoAspect {
 
     @TargetApi(Build.VERSION_CODES.N)
     private static <T extends Annotation> T getTypeAnnotation(JoinPoint joinPoint, Class<T> clazz) {
-        Signature signature = joinPoint.getSignature();
-        Class<T> typeClazz = signature.getDeclaringType();
-        T t = typeClazz.getDeclaredAnnotation(clazz);
+        Class typeClass = joinPoint.getThis().getClass();
+        T t = (T) typeClass.getDeclaredAnnotation(clazz);
 
         return t;
     }
