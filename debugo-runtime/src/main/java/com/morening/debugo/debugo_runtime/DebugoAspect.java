@@ -144,8 +144,20 @@ public class DebugoAspect {
         Signature signature = joinPoint.getSignature();
         if (signature instanceof MethodSignature){
             return getMethodAnnotation(joinPoint, clazz);
+        } else if (signature instanceof ConstructorSignature){
+            return getConstructorAnnotation(joinPoint, clazz);
         }
-        return getConstructorAnnotation(joinPoint, clazz);
+
+        return getTypeAnnotation(joinPoint, clazz);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private static <T extends Annotation> T getTypeAnnotation(JoinPoint joinPoint, Class<T> clazz) {
+        Signature signature = joinPoint.getSignature();
+        Class<T> typeClazz = signature.getDeclaringType();
+        T t = typeClazz.getDeclaredAnnotation(clazz);
+
+        return t;
     }
 
     private static <T extends Annotation> T getMethodAnnotation(JoinPoint joinPoint, Class<T> clazz){
