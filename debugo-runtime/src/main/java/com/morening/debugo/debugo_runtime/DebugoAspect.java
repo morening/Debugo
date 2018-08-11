@@ -10,7 +10,6 @@ import com.morening.debugo.debugo_annotations.Debugo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -67,12 +66,9 @@ public class DebugoAspect {
         return result;
     }
 
-    /*@AfterThrowing(pointcut = "method() || constructor()", throwing = "thw")
-    public void throwingAndLog(JoinPoint joinPoint, Object thw){
-        exitThrowable(joinPoint, (Throwable) thw);
-    }*/
+    private static void enter(ProceedingJoinPoint joinPoint) {
+        if (!enabled) return;
 
-    private static long enter(ProceedingJoinPoint joinPoint) {
         StringBuilder sb = new StringBuilder();
         sb.append("->").append(" ");
         sb.append(getMethodNameWithParameters(joinPoint));
@@ -82,12 +78,11 @@ public class DebugoAspect {
         }
 
         Log.d(getTag(joinPoint), sb.toString());
-
-        return System.currentTimeMillis();
     }
 
-    private static void exit(ProceedingJoinPoint joinPoint, Object result, long start) {
-        long duration = System.currentTimeMillis() - start;
+    private static void exit(ProceedingJoinPoint joinPoint, Object result, long duration) {
+        if (!enabled) return;
+
         StringBuilder sb = new StringBuilder();
         sb.append("->")
                 .append(" ").append(getMethodNameWithParameters(joinPoint))
