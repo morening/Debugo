@@ -10,6 +10,7 @@ import com.morening.debugo.debugo_annotations.Debugo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -97,9 +98,15 @@ public class DebugoAspect {
         Log.d(getTag(joinPoint), sb.toString());
     }
 
-    /*private static void exitThrowable(JoinPoint joinPoint, Throwable throwable) {
+    @AfterThrowing(pointcut = "method() || constructor()", throwing = "thw")
+    public void throwingAndLog(JoinPoint joinPoint, Throwable thw){
+        exitThrowable(joinPoint, thw);
+    }
+
+    private static void exitThrowable(JoinPoint joinPoint, Throwable throwable) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getMethodNameWithParameters(joinPoint))
+        sb.append("<-")
+                .append(" ").append(getMethodNameWithParameters(joinPoint))
                 .append(" ").append("terminated due to")
                 .append(" ").append(throwable.getClass().getSimpleName())
                 .append(" ").append(throwable.getMessage())
@@ -107,7 +114,7 @@ public class DebugoAspect {
                 .append(" ").append(joinPoint.getSourceLocation().getLine());
 
         Log.d(getTag(joinPoint), sb.toString());
-    }*/
+    }
 
     private static String getTag(JoinPoint joinPoint){
         Debugo debugo = getAnnotation(joinPoint, Debugo.class);
