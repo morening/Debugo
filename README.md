@@ -3,6 +3,7 @@ Easy to debug your project with annotations
 
 [![Build Status](https://travis-ci.org/morening/Debugo.svg?branch=master)](https://travis-ci.org/morening/Debugo)
 [![](https://jitpack.io/v/morening/Debugo.svg)](https://jitpack.io/#morening/Debugo)
+[ ![Download](https://api.bintray.com/packages/morening/maven/Debugo/images/download.svg) ](https://bintray.com/morening/maven/Debugo/_latestVersion)
 [![API](https://img.shields.io/badge/API-16%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=16)
 
 
