@@ -18,13 +18,35 @@ buildscript {
 
     dependencies {
         ...
-        classpath 'com.github.morening.Debugo:debugo-plugin:0.0.25'
+        classpath 'com.github.morening.Debugo:debugo-plugin:0.0.27'
     }
 }
 
 allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
+        ...
+    }
+}
+```
+
+or add jcenter repo and classpath like below in project root build.gradle
+```
+buildscript {
+    repositories {
+        jcenter()
+        ...
+    }
+
+    dependencies {
+        ...
+        classpath 'com.morening.debugo:debugo-plugin:0.0.27'
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://dl.bintray.com/morening/maven' }
         ...
     }
 }
