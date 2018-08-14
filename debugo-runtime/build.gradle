@@ -23,6 +23,9 @@ android {
     }
     productFlavors {
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 android.libraryVariants.all { variant ->
