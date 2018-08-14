@@ -5,9 +5,9 @@ import org.aspectj.tools.ajc.Main
 apply plugin: 'com.android.library'
 
 dependencies {
-    implementation 'org.aspectj:aspectjrt:1.8.6'
-    implementation project(':debugo-annotations')
-    testImplementation 'junit:junit:4.12'
+    compile 'org.aspectj:aspectjrt:1.8.6'
+    compile project(':debugo-annotations')
+    testCompile 'junit:junit:4.12'
 }
 
 android {
