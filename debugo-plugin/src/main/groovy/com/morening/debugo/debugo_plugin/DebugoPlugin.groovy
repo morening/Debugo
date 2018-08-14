@@ -27,9 +27,9 @@ class DebugoPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            compile 'com.github.morening.Debugo:debugo-runtime:0.0.28'
+            compile 'com.github.morening.Debugo:debugo-runtime:0.0.29'
             compile 'org.aspectj:aspectjrt:1.8.6'
-            compile 'com.github.morening.Debugo:debugo-annotations:0.0.28'
+            compile 'com.github.morening.Debugo:debugo-annotations:0.0.29'
         }
 
         project.extensions.create('debugo', DebugoExtension)
