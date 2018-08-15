@@ -1,23 +1,24 @@
 buildscript {
     repositories {
+        maven {
+            url 'https://dl.bintray.com/morening/maven'
+        }
         mavenCentral()
-        google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath 'org.aspectj:aspectjtools:1.8.6'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-//        classpath 'com.morening.debugo:debugo-plugin:0.0.27'
+//        classpath 'com.morening.debugo:debugo-plugin:0.0.29'
     }
 }
 
 allprojects {
     repositories {
         mavenCentral()
-        google()
         jcenter()
         maven{
             url 'https://dl.bintray.com/morening/maven'
